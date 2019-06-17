@@ -1,0 +1,15 @@
+#!/bin/bash
+
+set -ex
+
+docker build -t marvin .
+
+if docker ps | grep marvin_container >/dev/null; then
+    docker stop marvin_container >/dev/null
+fi
+
+if docker ps -a | grep marvin_container >/dev/null; then
+    docker rm marvin_container >/dev/null
+fi
+
+docker run --name marvin_container -d marvin
