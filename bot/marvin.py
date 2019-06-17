@@ -1,6 +1,7 @@
 import asyncio
 import discord
 import logging
+import random
 import re
 import schedule
 import yaml
@@ -17,6 +18,50 @@ logger.addHandler(console_handler)
 file_handler = logging.FileHandler(filename='marvin.log', encoding='UTF-8')
 file_handler.setFormatter(formatter)
 logger.addHandler(file_handler)
+
+food = {
+    "Downtown": [
+        "Las Velas",
+        "DiBella's",
+        "The Yard",
+        "The Simple Greek",
+        "Sienna Mercato",
+        "Ptimanti"
+    ],
+    "North Shore": [
+        "Burgatory",
+    ],
+    "Oakland": [
+        "Chipotle",
+        "Fuel and Fuddle"
+        "Primanti",
+        "CHiKN",
+        "Stack'd",
+        "Oishii",
+        "Pie Express",
+        "Mad Mex",
+    ],
+    "Shadyside": ["Mad Mex", "Noodlehead", "Choolah", "Uncle Sams"],
+    "The Strip": [
+        "Gaucho",
+        "Smallman Galley",
+        "Roland's",
+        "Kaya",
+        "Bella Notte",
+        "Pennsylvania Market",
+        "Pho Van",
+        "Cinderlands"
+    ],
+    "Southside": ["Hofbrauhaus"],
+    "Station Square": ["Hard Rock Cafe"],
+}
+
+
+def get_rando_place():
+    area, places = random.choice(list(food.items()))
+    place = random.choice(places)
+    return area, place
+
 
 async def reminder_loop(client):
     await client.wait_until_ready()
@@ -59,9 +104,16 @@ class Marvin(discord.Client):
             await message.channel.send(
                     'I have a million ideas. They all point to certain death.')
 
+        if re.match(r'^where get food', message.content.lower()):
+            logger.info('Matched \'where get\'')
+            area, place = get_rando_place()
+            await message.channel.send(f'You could go to {place} in {area}')
+
     async def post_primantis_reminder(self):
         logger.info('Posting Primanti\'s reminder')
         await self.channel_map['アニメ_execs'].send('It\'s Primanti\'s Monday.')
+        area, place = get_rando_place()
+        await self.channel_map['アニメ_execs'].send(f'You could go to {place} in {area}.')
 
 
 if __name__ == '__main__':
