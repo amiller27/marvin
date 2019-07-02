@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 import asyncio
 import discord
 import logging
@@ -69,6 +71,17 @@ async def reminder_loop(client):
         schedule.run_pending()
         await asyncio.sleep(30)
 
+MESSAGE_CACHE_LENGTH_SECONDS = 600
+deleted_message_cache = []
+def clean_message_cache():
+    deleted_message_cache.sort(key=lambda msg: msg.created_at)
+    for i in reversed(range(len(deleted_message_cache))):
+        msg = deleted_message_cache[i]
+        if msg.created_at \
+                < datetime.datetime.now() \
+                - datetime.timedelta(seconds=MESSAGE_CACHE_LENGTH_SECONDS):
+            del deleted_message_cache[i]
+
 
 class Marvin(discord.Client):
     async def on_ready(self):
@@ -92,8 +105,21 @@ class Marvin(discord.Client):
                     client.post_primantis_reminder()))
         logger.info('Done startup')
 
+    async def on_message_delete(self, message):
+        logger.info('Got deleted message %s', repr(message))
+        deleted_message_cache.append(message)
+        clean_message_cache()
+
     async def on_message(self, message):
-        logger.info('Got message %s', repr(message))
+        logger.info('Got message %s with contents %s', repr(message), repr(message.content))
+
+        if message.content == '👀':
+            logger.info('Matched :eyes:')
+            for msg in deleted_message_cache:
+                if msg.channel == message.channel:
+                    await message.channel.send('{} said: {}'.format(
+                        msg.author.nick if msg.author.nick else msg.author.name,
+                        msg.content))
 
         if re.match(r'^how make', message.content.lower()):
             logger.info('Matched \'how make\'')
