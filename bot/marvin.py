@@ -1,14 +1,17 @@
 #!/usr/bin/env python3
 
 import asyncio
+import datetime
 import discord
 import logging
 import random
 import re
 import schedule
+import sys
+import traceback
 import yaml
 
-logger = logging.getLogger('marvin')
+logger = logging.getLogger('MARVIN')
 logger.setLevel(logging.INFO)
 formatter = logging.Formatter(
     '%(asctime)s - %(name)s - %(levelname)s - %(message)s')
@@ -20,6 +23,30 @@ logger.addHandler(console_handler)
 file_handler = logging.FileHandler(filename='marvin.log', encoding='UTF-8')
 file_handler.setFormatter(formatter)
 logger.addHandler(file_handler)
+
+class StreamToLogger(object):
+    """
+    Fake file-like stream object that redirects writes to a logger instance.
+    """
+    def __init__(self, logger, log_level=logging.INFO):
+        self.logger = logger
+        self.log_level = log_level
+        self.linebuf = ''
+
+    def write(self, buf):
+        for line in buf.rstrip().splitlines():
+            self.logger.log(self.log_level, line.rstrip())
+
+    def flush(self):
+        pass
+
+stdout_logger = logger.getChild('STDOUT')
+sl = StreamToLogger(stdout_logger, logging.INFO)
+sys.stdout = sl
+
+stderr_logger = logger.getChild('STDERR')
+sl = StreamToLogger(stderr_logger, logging.ERROR)
+sys.stderr = sl
 
 food = {
     "Downtown": [
@@ -71,15 +98,17 @@ async def reminder_loop(client):
         schedule.run_pending()
         await asyncio.sleep(30)
 
-MESSAGE_CACHE_LENGTH_SECONDS = 600
+MESSAGE_CACHE_LENGTH_SECONDS = 5*60
 deleted_message_cache = []
 def clean_message_cache():
     deleted_message_cache.sort(key=lambda msg: msg.created_at)
     for i in reversed(range(len(deleted_message_cache))):
         msg = deleted_message_cache[i]
+        logger.info(f'Checking message {msg}')
         if msg.created_at \
                 < datetime.datetime.now() \
                 - datetime.timedelta(seconds=MESSAGE_CACHE_LENGTH_SECONDS):
+            logger.info('Deleting')
             del deleted_message_cache[i]
 
 
@@ -115,6 +144,7 @@ class Marvin(discord.Client):
 
         if message.content == '👀':
             logger.info('Matched :eyes:')
+            clean_message_cache()
             for msg in deleted_message_cache:
                 if msg.channel == message.channel:
                     await message.channel.send('{} said: {}'.format(
