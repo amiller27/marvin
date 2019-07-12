@@ -165,6 +165,12 @@ class Marvin(discord.Client):
             area, place = get_rando_place()
             await message.channel.send(f'You could go to {place} in {area}')
 
+        if re.match(r'^marvin\s+log$', message.content.lower()) and message.author.id == config['admin']:
+            logger.info('Matched \'logs\'')
+            with open('marvin.log', encoding='utf-8') as f:
+                log_text = f.read()
+            await message.channel.send(log_text)
+
     async def post_primantis_reminder(self):
         logger.info('Posting Primanti\'s reminder')
         await self.channel_map['アニメ_execs'].send('It\'s Primanti\'s Monday.')
