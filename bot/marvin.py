@@ -140,7 +140,10 @@ class Marvin(discord.Client):
         clean_message_cache()
 
     async def on_message(self, message):
-        logger.info('Got message %s with contents %s', repr(message), repr(message.content))
+        if message.author.name == 'Marvin' and message.author.bot:
+            logger.info('Got message from self: %s', repr(message))
+        else:
+            logger.info('Got message %s with contents %s', repr(message), repr(message.content))
 
         if message.content == '👀':
             logger.info('Matched :eyes:')
@@ -169,7 +172,10 @@ class Marvin(discord.Client):
             logger.info('Matched \'logs\'')
             with open('marvin.log', encoding='utf-8') as f:
                 log_text = f.read()
-            await message.channel.send(log_text)
+
+            # Only send last 1900 characters, don't want to overflow message
+            # size
+            await message.channel.send(log_text[-1900:])
 
     async def post_primantis_reminder(self):
         logger.info('Posting Primanti\'s reminder')
