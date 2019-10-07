@@ -8,6 +8,7 @@ import random
 import re
 import schedule
 import sys
+import threading
 import traceback
 import yaml
 
@@ -129,6 +130,9 @@ class Marvin(discord.Client):
                         logger.info('Adding debug channel %s with id %s', channel, channel.id)
                         self.debug_channel = channel
 
+        self.reminder_lock = threading.Lock()
+        self.last_reminder = datetime.datetime.fromtimestamp(0)
+
         schedule.every().monday.at('16:00').do(
                 lambda : client.loop.create_task(
                     client.post_primantis_reminder()))
@@ -178,10 +182,13 @@ class Marvin(discord.Client):
             await message.channel.send(log_text[-1900:])
 
     async def post_primantis_reminder(self):
-        logger.info('Posting Primanti\'s reminder')
-        await self.channel_map['アニメ_execs'].send('It\'s Primanti\'s Monday.')
-        area, place = get_rando_place()
-        await self.channel_map['アニメ_execs'].send(f'You could go to {place} in {area}.')
+        with self.reminder_lock:
+            if (datetime.datetime.now() - self.last_reminder) > datetime.timedelta(hours=1):
+                logger.info('Posting Primanti\'s reminder')
+                await self.channel_map['アニメ_execs'].send('It\'s Primanti\'s Monday.')
+                area, place = get_rando_place()
+                await self.channel_map['アニメ_execs'].send(f'You could go to {place} in {area}.')
+                self.last_reminder = datetime.datetime.now()
 
 
 if __name__ == '__main__':
