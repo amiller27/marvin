@@ -143,6 +143,17 @@ class Marvin(discord.Client):
         deleted_message_cache.append(message)
         clean_message_cache()
 
+    async def on_message_edit(self, before, after):
+        logger.info('Got edited message %s', repr(after))
+        if before.content == after.content:
+            logger.info('Message not changed')
+        else:
+            logger.info('Content changed from {} to {}'.format(
+                before.content, after.content))
+            deleted_message_cache.append(before)
+            clean_message_cache()
+
+
     async def on_message(self, message):
         if message.author.name == 'Marvin' and message.author.bot:
             logger.info('Got message from self: %s', repr(message))
