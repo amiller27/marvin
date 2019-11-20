@@ -133,7 +133,7 @@ class Marvin(discord.Client):
         self.reminder_lock = threading.Lock()
         self.last_reminder = datetime.datetime.fromtimestamp(0)
 
-        schedule.every().monday.at('16:00').do(
+        schedule.every().monday.at('17:00').do(
                 lambda : client.loop.create_task(
                     client.post_primantis_reminder()))
         logger.info('Done startup')
