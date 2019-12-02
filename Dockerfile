@@ -6,7 +6,7 @@ RUN apt-get update -qq && apt-get install -y \
     python3-yaml \
     git
 
-RUN pip3 install discord.py schedule
+RUN pip3 install discord.py==1.2.5 schedule
 
 COPY bot /bot
 
