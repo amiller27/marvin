@@ -180,7 +180,17 @@ class Marvin(discord.Client):
 
         if re.match(r'^where get food', message.content.lower()):
             logger.info('Matched \'where get\'')
-            area, place = get_rando_place()
+            match_area = re.match(r'^where get food in (.*)', message.content.lower())
+            if match_area:
+                target_area = match_area[1]
+                if target_area not in map(str.lower, food.keys()):
+                    await message.channel.send(f'{target_area} isn\'t a place')
+                    return
+                area, place = get_rando_place()
+                while area.lower() != target_area:
+                    area, place = get_rando_place()
+            else:
+                area, place = get_rando_place()
             await message.channel.send(f'You could go to {place} in {area}')
 
         if re.match(r'^marvin\s+log$', message.content.lower()) and message.author.id == config['admin']:
