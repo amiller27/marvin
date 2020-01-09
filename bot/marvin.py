@@ -94,8 +94,9 @@ food = {
 
 
 def get_rando_place():
-    area, places = random.choice(list(food.items()))
-    place = random.choice(places)
+    tuples = sum(([(area_places[0], place) for place in area_places[1]]
+              for area_places in food.items()), [])
+    area, place = random.choice(tuples)
     return area, place
 
 
