@@ -56,22 +56,28 @@ food = {
         "The Yard",
         "The Simple Greek",
         "Sienna Mercato",
-        "Ptimanti"
+        "Primanti\'s",
     ],
     "North Shore": [
         "Burgatory",
     ],
     "Oakland": [
         "Chipotle",
-        "Fuel and Fuddle"
-        "Primanti",
+        "Fuel and Fuddle",
+        "Primanti\'s",
         "CHiKN",
         "Stack'd",
         "Oishii",
         "Pie Express",
         "Mad Mex",
+        "Pad Thai Noodle",
     ],
-    "Shadyside": ["Mad Mex", "Noodlehead", "Choolah", "Uncle Sams"],
+    "Shadyside/East Liberty/Squirrel Hill": [
+        "Mad Mex",
+        "Noodlehead",
+        "Choolah",
+        "Uncle Sam\'s",
+    ],
     "The Strip": [
         "Gaucho",
         "Smallman Galley",
@@ -80,7 +86,7 @@ food = {
         "Bella Notte",
         "Pennsylvania Market",
         "Pho Van",
-        "Cinderlands"
+        "Cinderlands",
     ],
     "Southside": ["Hofbrauhaus"],
     "Station Square": ["Hard Rock Cafe"],
