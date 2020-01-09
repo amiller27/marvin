@@ -12,4 +12,9 @@ if docker ps -a | grep marvin_container >/dev/null; then
     docker rm marvin_container >/dev/null
 fi
 
-docker run --name marvin_container -d marvin
+docker run \
+    --cap-add sys_ptrace \
+    --name marvin_container \
+    --volume $(pwd)/profiles:/profiles:rw \
+    -d \
+    marvin
