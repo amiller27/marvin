@@ -176,6 +176,10 @@ class Marvin(discord.Client):
                         msg.author.nick if msg.author.nick else msg.author.name,
                         msg.content))
 
+        if re.match(r'^The bot .* has gone offline.$', message.content):
+            logger.info('Matched bot has gone offline')
+            await message.channel.send('F')
+
         if re.match(r'^how make', message.content.lower()):
             logger.info('Matched \'how make\'')
             await message.channel.send('You wouldn\'t understand.')
