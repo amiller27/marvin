@@ -180,6 +180,10 @@ class Marvin(discord.Client):
             logger.info('Matched bot has gone offline')
             await message.channel.send('F')
 
+        if re.match(r'what are the rules', message.content.lower()):
+            logger.info('Matched rules')
+            await message.channel.send('https://xkcd.com/2235')
+
         if re.match(r'^how make', message.content.lower()):
             logger.info('Matched \'how make\'')
             await message.channel.send('You wouldn\'t understand.')
