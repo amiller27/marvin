@@ -6,7 +6,7 @@ RUN apt-get update -qq && apt-get install -y \
     python3-yaml \
     git
 
-RUN pip3 install discord.py==1.2.5 schedule py-spy
+RUN pip3 install discord.py==1.3.3 schedule py-spy
 
 COPY bot /bot
 
