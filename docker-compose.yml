@@ -1,0 +1,9 @@
+version: '3'
+services:
+  marvin:
+    build: .
+    cap_add:
+      - sys_ptrace
+    volumes:
+      - ./profiles:/profiles:rw
+    restart: always
